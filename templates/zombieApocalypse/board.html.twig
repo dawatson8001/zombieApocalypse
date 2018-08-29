@@ -1,0 +1,13 @@
+{% extends 'zombieApocalypse/base.html.twig' %}
+
+{% block body %}
+    <a class="btn btn-success" href="{{ path('move', {'from' : 'E', 'level' : 1, 'move' : 10}) }}">Move</a></br>
+    {% for direction in directions.direction %}
+        {{direction}}</br>
+    {% endfor %}
+    </br>{{ directions.situation.statement }}</br>
+    {% if directions.situation.item != '' %}
+        </br>{{ directions.situation.item }}
+    {% endif %}
+
+{% endblock %}

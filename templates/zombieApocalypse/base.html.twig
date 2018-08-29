@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('build/css/bootstrap.min.css') }}">
+        {% endblock %}
+    </head>
+    <body class="bg-light">
+        <main role="main" class="container">
+            <div >
+                {% block body %}{% endblock %}
+            </div>
+        </main>        
+        {% block javascripts %}
+        {% endblock %}
+    </body>
+</html>
