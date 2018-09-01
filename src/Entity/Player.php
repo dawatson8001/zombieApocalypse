@@ -37,7 +37,7 @@ class Player
     private $weapon;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      */
     private $weaponCondition;
 
@@ -47,7 +47,7 @@ class Player
     private $armor;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      */
     private $armorCondition;
 
@@ -57,9 +57,29 @@ class Player
     private $medicineOne;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $medicineOneUnits;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Medicine")
      */
     private $medicineTwo;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $medicineTwoUnits;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 1})
+     */
+    private $level;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 1})
+     */
+    private $moves;
 
     public function getId(): ?int
     {
@@ -119,7 +139,7 @@ class Player
         return $this->weaponCondition;
     }
 
-    public function setWeaponCondition(?int $weaponCondition): self
+    public function setWeaponCondition(int $weaponCondition): self
     {
         $this->weaponCondition = $weaponCondition;
 
@@ -133,7 +153,7 @@ class Player
 
     public function setArmor(?Armor $armor): self
     {
-        $this->Armor = $armor;
+        $this->armor = $armor;
 
         return $this;
     }
@@ -143,7 +163,7 @@ class Player
         return $this->armorCondition;
     }
 
-    public function setArmorCondition(?int $armorCondition): self
+    public function setArmorCondition(int $armorCondition): self
     {
         $this->armorCondition = $armorCondition;
 
@@ -162,6 +182,18 @@ class Player
         return $this;
     }
 
+    public function getMedicineOneUnits(): ?int
+    {
+        return $this->medicineOneUnits;
+    }
+
+    public function setMedicineOneUnits(int $medicineOneUnits): self
+    {
+        $this->medicineOneUnits = $medicineOneUnits;
+
+        return $this;
+    }
+
     public function getMedicineTwo(): ?Medicine
     {
         return $this->medicineTwo;
@@ -170,6 +202,42 @@ class Player
     public function setMedicineTwo(?Medicine $medicineTwo): self
     {
         $this->medicineTwo = $medicineTwo;
+
+        return $this;
+    }
+
+    public function getMedicineTwoUnits(): ?int
+    {
+        return $this->medicineTwoUnits;
+    }
+
+    public function setMedicineTwoUnits(int $medicineTwoUnits): self
+    {
+        $this->medicineTwoUnits = $medicineTwoUnits;
+
+        return $this;
+    }
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): self
+    {
+        $this->level = $level;
+
+        return $this;
+    }
+
+    public function getMoves(): ?int
+    {
+        return $this->moves;
+    }
+
+    public function setMoves(int $moves): self
+    {
+        $this->moves = $moves;
 
         return $this;
     }

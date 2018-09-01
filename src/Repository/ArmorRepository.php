@@ -47,4 +47,14 @@ class ArmorRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findArmorByLevel($level)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.levelAvailable <= :val')
+            ->setParameter('val', $level)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

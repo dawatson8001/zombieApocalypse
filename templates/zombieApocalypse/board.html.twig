@@ -1,13 +1,47 @@
 {% extends 'zombieApocalypse/base.html.twig' %}
 
 {% block body %}
-    <a class="btn btn-success" href="{{ path('move', {'from' : 'E', 'level' : 1, 'move' : 10}) }}">Move</a></br>
+    <h1>Zombie Apocalypse!</h1>
+    <a class="btn btn-success" href="{{ path('move', {'username': player.username, 'from': 'E', 'currentLevel': level, 'currentMove': moves}) }}">Move</a></br>
+    <h4>Welcome: {{ player.username }}</h4>
+    <h4>Health: {{ player.health }}</h4>
+    <h4>Level: {{ level }}</h4>
+    <h4>Moves: {{ moves }}</h4>
+    <h4>Directions to move</h4>
+    <p>You came from {{ directions.direction[0] }}</p>
     {% for direction in directions.direction %}
         {{direction}}</br>
     {% endfor %}
-    </br>{{ directions.situation.statement }}</br>
-    {% if directions.situation.item != '' %}
-        </br>{{ directions.situation.item }}
+    <h4>Weapon: </h4>
+    {% if player.weapon != null %}
+        {{ player.weapon.name }}
+        {{ player.weaponCondition }}
+    {% endif %}
+    <h4>Armor: </h4>
+    {% if player.armor != null %}
+        {{ player.armor.name }}
+        {{ player.armorCondition }}
+    {% endif %}
+    <h4>Medicine 1: </h4>
+    {% if player.medicineOne != null %}
+        {{ player.medicineOne.name }}
+        {{ player.medicineOneUnits }}
+    {% endif %}
+    <h4>Medicine 2: </h4>
+    {% if player.medicineTwo != null %}
+        {{ player.medicineTwo.name }}
+        {{ player.medicineTwoUnits }}
     {% endif %}
 
+</br>_______________________________________________________________________________
+    <h4>Location:</h4>
+    {{ directions.situation.statement }}</br>
+    {% if directions.situation.item != '' %}
+        <h4>You found:</h4>
+        {{ directions.situation.item.name }}
+        <h4>Condition:</h4>
+        {{ directions.situation.item.condition }}
+        <h4>Units</h4>
+        {{ directions.situation.item.units }}
+    {% endif %}
 {% endblock %}

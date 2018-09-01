@@ -31,6 +31,13 @@ class Medicine
      */
     private $maxUnits;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $levelAvailable;
+
+    private $units;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -68,6 +75,30 @@ class Medicine
     public function setMaxUnits(int $maxUnits): self
     {
         $this->maxUnits = $maxUnits;
+
+        return $this;
+    }
+    
+    public function getLevelAvailable(): ?int
+    {
+        return $this->levelAvailable;
+    }
+
+    public function setLevelAvailable(int $levelAvailable): self
+    {
+        $this->levelAvailable = $levelAvailable;
+
+        return $this;
+    }
+
+    public function getUnits(): ?int
+    {
+        return $this->units;
+    }
+
+    public function setUnits(int $units): self
+    {
+        $this->units = $units;
 
         return $this;
     }

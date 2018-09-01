@@ -41,6 +41,11 @@ class Enemy
      */
     private $maxDamage;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $levelAvailable;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -102,6 +107,19 @@ class Enemy
     public function setMaxDamage(int $maxDamage): self
     {
         $this->maxDamage = $maxDamage;
+
+        return $this;
+    }
+
+
+    public function getLevelAvailable(): ?int
+    {
+        return $this->levelAvailable;
+    }
+
+    public function setLevelAvailable(int $levelAvailable): self
+    {
+        $this->levelAvailable = $levelAvailable;
 
         return $this;
     }

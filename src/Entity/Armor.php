@@ -31,6 +31,13 @@ class Armor
      */
     private $maxItemCondition;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $levelAvailable;
+
+    private $condition;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -68,6 +75,30 @@ class Armor
     public function setMaxItemCondition(int $maxItemCondition): self
     {
         $this->maxItemCondition = $maxItemCondition;
+
+        return $this;
+    }
+    
+    public function getLevelAvailable(): ?int
+    {
+        return $this->levelAvailable;
+    }
+
+    public function setLevelAvailable(int $levelAvailable): self
+    {
+        $this->levelAvailable = $levelAvailable;
+
+        return $this;
+    }
+
+    public function getCondition(): ?int
+    {
+        return $this->condition;
+    }
+
+    public function setCondition(int $condition): self
+    {
+        $this->condition = $condition;
 
         return $this;
     }

@@ -47,4 +47,14 @@ class MedicineRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findMedicinesByLevel($level)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.levelAvailable <= :val')
+            ->setParameter('val', $level)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

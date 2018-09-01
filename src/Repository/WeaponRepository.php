@@ -47,4 +47,14 @@ class WeaponRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findWeaponsByLevel($level)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.levelAvailable <= :val')
+            ->setParameter('val', $level)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
