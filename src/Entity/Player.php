@@ -37,7 +37,7 @@ class Player
     private $weapon;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $weaponCondition;
 
@@ -47,7 +47,7 @@ class Player
     private $armor;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $armorCondition;
 
@@ -57,7 +57,7 @@ class Player
     private $medicineOne;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $medicineOneUnits;
 
@@ -67,17 +67,17 @@ class Player
     private $medicineTwo;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $medicineTwoUnits;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 1})
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $level;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 1})
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $moves;
 

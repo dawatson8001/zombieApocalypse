@@ -17,11 +17,16 @@ use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use Symfony\Flex\Response;
 use PhpParser\Node\Expr\AssignOp\Concat;
+use App\Form\NewPlayerType;
+use Symfony\Component\HttpFoundation\Request;
 
 class GameController extends AbstractController
 {
     private $currentMoves;
     private $currentLevel;
+    private $weapon;
+    private $armor;
+    private $medicine;
 
     public function __construct(EntityManagerInterface $entityManager, WeaponRepository $weaponRepository, 
                                 ArmorRepository $armorRepository, MedicineRepository $medicineRepository, 
@@ -39,9 +44,31 @@ class GameController extends AbstractController
     /**
      * @Route("/", name="test_page")
      */
-    public function index()
+    public function index(Request $request)
     {
-        return $this->render('zombieApocalypse/index.html.twig');
+        $form = $this->createForm(
+            NewPlayerType::class,
+            $this->player
+        );
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            $this->player->setHealth(100);
+            $this->player->setMaxHealth(100);
+            $this->entityManager->persist($this->player);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('move',[
+                'username' => $this->player->getUsername(),
+                'from' => 'N',
+                'currentLevel' => 1,
+                'currentMove' => 1,
+            ]);
+
+        }
+        return $this->render('zombieApocalypse/index.html.twig',[
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -52,12 +79,16 @@ class GameController extends AbstractController
         $this->player->setUsername($player->getUsername());
         $this->currentLevel = 1;
         $this->currentMoves = 1;
+        $this->equipment = null;
+        $this->medicine = null;
 
         return $this->render('zombieApocalypse/board.html.twig', [
             'directions' => $this->availableDirection($from),
             'player' => $this->player,
             'moves' => $this->currentMoves,
             'level' => $this->currentLevel,
+            'equipment' => $this->equipment,
+            'medicine' => $this->medicine,
         ]);
     }
 
@@ -69,12 +100,16 @@ class GameController extends AbstractController
         $this->player = $player;
         $this->currentMoves = $currentMove + 1;
         $this->currentLevel = $currentLevel;
+        $this->equipment = null;
+        $this->medicine = null;
 
         return $this->render('zombieApocalypse/board.html.twig', [
             'directions' => $this->availableDirection($from),
             'player' => $this->player,
             'moves' => $this->currentMoves,
             'level' => $this->currentLevel,
+            'equipment' => $this->equipment,
+            'medicine' => $this->medicine,
         ]);
     }
 
@@ -109,21 +144,21 @@ class GameController extends AbstractController
         $directions = array_unique($makeDirection);
 
         //disabled for testing
-        // if(sizeOf($directions) == 1){
-        //     $situation = rand(1, 2);
-        //     switch($situation){
-        //         case 1:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->deadEnd(),
-        //                 ];
-        //             break;
-        //         case 2:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->findBedroom(),
-        //                 ];
-        //             break;
-        //     }
-        // }
+        if(sizeOf($directions) == 1){
+            $situation = rand(1, 2);
+            switch($situation){
+                case 1:
+                    return ['direction' => $directions,
+                            'situation' => $this->deadEnd(),
+                        ];
+                    break;
+                case 2:
+                    return ['direction' => $directions,
+                            'situation' => $this->findBedroom(),
+                        ];
+                    break;
+            }
+        }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -133,7 +168,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(6, 6);    //Testing 
+        $situation = rand(1, 5);    //Testing 
         switch($situation){
             case 1:
                 return $this->findWeapon();
@@ -185,8 +220,8 @@ class GameController extends AbstractController
                         $this->changeWeapon($weapArr[$x], $condition);
                     }
                     $this->entityManager->flush();
-                    return ['statement' => $statement,
-                    'item' => $weapArr[$x]];
+                    $this->equipment = $weapArr[$x];
+                    return ['statement' => $statement];
                 }
             }
         }
@@ -237,8 +272,8 @@ class GameController extends AbstractController
                         $this->changeArmor($armorArr[$x], $condition);
                     }
                     $this->entityManager->flush();
-                    return ['statement' => $statement,
-                    'item' => $armorArr[$x]];
+                    $this->equipment = $armorArr[$x];
+                    return ['statement' => $statement];
                 }
             }
         }
@@ -296,8 +331,8 @@ class GameController extends AbstractController
                         $this->changeMedicineTwo($medArr[$x], $units);
                     }
                     $this->entityManager->flush();
-                    return ['statement' => $statement,
-                    'item' => $medArr[$x]];
+                    $this->medicine = $medArr[$x];
+                    return ['statement' => $statement];
                 }
             }
         }
@@ -349,16 +384,14 @@ class GameController extends AbstractController
     {
         $statement = 'You carefully close the door behind you, as you turn around to inspect the room you hear noises!!';
         //search database for type of attacker, randomly generate number - all based on level and number of rooms visited in level
-        return ['statement' => $statement,
-                'item' => ''];
+        return ['statement' => $statement];
     }
 
     //nothing to do in here
     public function emptyRoom()
     {
         $statement = 'Looks like there isn\'t anything to do in here';
-        return ['statement' => $statement,
-                'item' => ''];
+        return ['statement' => $statement];
     }
 
     //find escape to next level
@@ -378,8 +411,8 @@ class GameController extends AbstractController
                 break;
         }
         $this->currentLevel++;
-        return ['statement' => $statement,
-                'item' => ''];
+        $this->currentMoves = 0;
+        return ['statement' => $statement];
     }
 
     //find bed to rest in 
@@ -395,7 +428,6 @@ class GameController extends AbstractController
             $this->player->setHealth($this->player->getHealth() + $recoveredHealth);
         }
         $this->entityManager->flush();
-        return ['statement' => $statement,
-                'item' => ''];
+        return ['statement' => $statement];
     }
 }

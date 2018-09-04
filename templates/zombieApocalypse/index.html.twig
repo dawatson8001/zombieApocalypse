@@ -1,8 +1,20 @@
 {% extends 'zombieApocalypse/base.html.twig' %}
 
 {% block body %}
-<h1>Zombie Apocalypse</h1>
-    <input type="text" id="username"></input>
-    <a class="btn btn-primary" href="{{ path('start', {'username': 'Dave', 'from': 'N'}) }}" >Create User</a>
+    <audio autoplay loop>
+        <source src="{{ asset('music/TheHaunting.mp3') }}" type="audio/mpeg">
+    </audio>
+<div align="center">
+    {{ form_start(form) }}
 
+        <h3>{{form_label(form.username)}}</h3>
+        {{form_errors(form.username)}}
+        {{form_widget(form.username)}}
+        </br>
+        </br>
+        {{form_widget(form.escape)}}
+
+        {{form_rest(form)}}
+    {{ form_end(form) }}
+</div>
 {% endblock %}
