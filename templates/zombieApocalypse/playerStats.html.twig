@@ -1,0 +1,45 @@
+<div class="d-flex justify-content-center">
+        <div class="d-flex flex-row">
+            <div class="stat"><b>Health: </b>{{ player.health }}</div>
+            <div class="stat"><b>Level: </b>{{ player.level }}</div>
+            <div class="stat"><b>Moves: </b>{{ player.moves }}</div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="d-flex flex-row">
+            <div class="stat">
+                <b>Weapon: </b>
+                {% if player.weapon != null %}{{ player.weapon.name }} - {{ player.weaponCondition }}/{{player.weapon.maxItemCondition}}{% endif %}
+            </div>
+            <div class="stat">
+                    <b>Armor: </b>
+                    {% if player.armor != null %}{{ player.armor.name }} - {{ player.armorCondition }}/{{player.armor.maxItemCondition}}{% endif %}
+                </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="d-flex flex-row">
+            <div class="stat">
+                <b>Medicine 1: </b>
+                {% if player.medicineOne != null %}
+                    {{ player.medicineOne.name }} - {{ player.medicineOneUnits }}
+                     <!-- <a class="btn btn-success" href="{{ path('update_medicine_one', {'username': player.username}) }}">Use</a> -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="d-flex flex-row">
+            <div class="stat">
+                <b>Medicine 2: </b>
+                {% if player.medicineTwo != null %}{{ player.medicineTwo.name }} - {{ player.medicineTwoUnits }}
+                <!-- <a class="btn btn-success" href="{{ path('update_medicine_one', {'username': player.username}) }}">Use</a> -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex"></div>
+        <div class="d-flex flex-row mb-3">
+            <div class="p-2"><h4>Good luck, {{ player.username }}...</h4></div>
+        </div>
+    </div>

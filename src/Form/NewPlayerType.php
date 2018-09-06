@@ -15,20 +15,8 @@ class NewPlayerType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, [
-                'label' => 'Survivor',
-            ])
-            // ->add('health')
-            // ->add('maxHealth')
-            // ->add('weaponCondition')
-            // ->add('armorCondition')
-            // ->add('medicineOneUnits')
-            // ->add('medicineTwoUnits')
-            // ->add('level')
-            // ->add('moves')
-            // ->add('weapon')
-            // ->add('armor')
-            // ->add('medicineOne')
-            // ->add('medicineTwo')
+                    'label' => 'Survivor',
+                ])
             ->add('escape', SubmitType::class);
         ;
     }

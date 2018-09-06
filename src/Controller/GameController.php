@@ -15,15 +15,13 @@ use App\Entity\Armor;
 use App\Entity\Medicine;
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
-use Symfony\Flex\Response;
 use PhpParser\Node\Expr\AssignOp\Concat;
 use App\Form\NewPlayerType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class GameController extends AbstractController
 {
-    private $currentMoves;
-    private $currentLevel;
     private $weapon;
     private $armor;
     private $medicine;
@@ -42,7 +40,7 @@ class GameController extends AbstractController
     }
 
     /**
-     * @Route("/", name="test_page")
+     * @Route("/start", name="start_page")
      */
     public function index(Request $request)
     {
@@ -55,14 +53,15 @@ class GameController extends AbstractController
 
             $this->player->setHealth(100);
             $this->player->setMaxHealth(100);
+            $this->player->setLevel(1);
+            $this->player->setMoves(0);
+
             $this->entityManager->persist($this->player);
             $this->entityManager->flush();
 
             return $this->redirectToRoute('move',[
                 'username' => $this->player->getUsername(),
                 'from' => 'N',
-                'currentLevel' => 1,
-                'currentMove' => 1,
             ]);
 
         }
@@ -72,42 +71,19 @@ class GameController extends AbstractController
     }
 
     /**
-     * @Route("/start/{username}/{from}", name="start")
+     * @Route("/move/{username}/{from}", name="move")
      */
-    public function start(Player $player, $from)
-    {
-        $this->player->setUsername($player->getUsername());
-        $this->currentLevel = 1;
-        $this->currentMoves = 1;
-        $this->equipment = null;
-        $this->medicine = null;
-
-        return $this->render('zombieApocalypse/board.html.twig', [
-            'directions' => $this->availableDirection($from),
-            'player' => $this->player,
-            'moves' => $this->currentMoves,
-            'level' => $this->currentLevel,
-            'equipment' => $this->equipment,
-            'medicine' => $this->medicine,
-        ]);
-    }
-
-    /**
-     * @Route("/move/{username}/{from}/{currentLevel}/{currentMove}", name="move")
-     */
-    public function move(Player $player, $from, $currentLevel, $currentMove)
+    public function move( Player $player, $from)
     {
         $this->player = $player;
-        $this->currentMoves = $currentMove + 1;
-        $this->currentLevel = $currentLevel;
+        $this->player->setMoves($this->player->getMoves() + 1);
+        $this->entityManager->flush();
         $this->equipment = null;
         $this->medicine = null;
 
         return $this->render('zombieApocalypse/board.html.twig', [
             'directions' => $this->availableDirection($from),
             'player' => $this->player,
-            'moves' => $this->currentMoves,
-            'level' => $this->currentLevel,
             'equipment' => $this->equipment,
             'medicine' => $this->medicine,
         ]);
@@ -123,7 +99,7 @@ class GameController extends AbstractController
         $makeDirection[0] = $previousDirection;
         for($x=1; $x <4; $x++){
             $dir = rand(1, 100);
-            if(((rand(1, 100) + $this->currentMoves) > 100) && $x == 1){
+            if(((rand(1, 100) + $this->player->getMoves()) > 100) && $x == 1){
                 break;
             }
             switch($dir){
@@ -144,21 +120,21 @@ class GameController extends AbstractController
         $directions = array_unique($makeDirection);
 
         //disabled for testing
-        if(sizeOf($directions) == 1){
-            $situation = rand(1, 2);
-            switch($situation){
-                case 1:
-                    return ['direction' => $directions,
-                            'situation' => $this->deadEnd(),
-                        ];
-                    break;
-                case 2:
-                    return ['direction' => $directions,
-                            'situation' => $this->findBedroom(),
-                        ];
-                    break;
-            }
-        }
+        // if(sizeOf($directions) == 1){
+        //     $situation = rand(1, 2);
+        //     switch($situation){
+        //         case 1:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->deadEnd(),
+        //                 ];
+        //             break;
+        //         case 2:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->findBedroom(),
+        //                 ];
+        //             break;
+        //     }
+        // }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -168,7 +144,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(1, 5);    //Testing 
+        $situation = rand(6, 6);    //Testing 
         switch($situation){
             case 1:
                 return $this->findWeapon();
@@ -198,10 +174,10 @@ class GameController extends AbstractController
     public function findWeapon()
     {
         $statement = 'You enter into a new room, looking around you notice a new weapon on the floor,';
-        $chanceOfFind = rand(1, (10 + ($this->currentLevel * 2)));
-        if($chanceOfFind <= 5){
-            $weapArr = $this->weaponRepository->findWeaponsByLevel($this->currentLevel);
-            $weaponChoice = (rand(1, count($weapArr)) / $this->currentLevel) * rand(1, $this->currentMoves);
+        $chanceOfFind = rand(1, (10 + ($this->player->getLevel() * 2)));
+        if($chanceOfFind <= 7){
+            $weapArr = $this->weaponRepository->findWeaponsByLevel($this->player->getLevel());
+            $weaponChoice = (rand(1, count($weapArr)) / $this->player->getLevel()) * rand(1, $this->player->getMoves());
             for($x = count($weapArr) - 1; $x >= 0; $x--){
                 if(($x === 0) || ($weaponChoice % $x === 0)){
                     $weapArr[$x]->setCondition(rand((ceil($weapArr[$x]->getMaxItemCondition() * 0.6)), $weapArr[$x]->getMaxItemCondition()));
@@ -250,10 +226,10 @@ class GameController extends AbstractController
     public function findArmor()
     {
         $statement = 'You enter into a new room, looking around you notice some new armor on the floor,';
-        $chanceOfFind = rand(1, (10 + ($this->currentLevel * 2)));
-        if($chanceOfFind <= 5){
-            $armorArr = $this->armorRepository->findArmorByLevel($this->currentLevel);
-            $armorChoice = (rand(1, count($armorArr)) / $this->currentLevel) * rand(1, $this->currentMoves);
+        $chanceOfFind = rand(1, (10 + ($this->player->getLevel() * 2)));
+        if($chanceOfFind <= 7){
+            $armorArr = $this->armorRepository->findArmorByLevel($this->player->getLevel());
+            $armorChoice = (rand(1, count($armorArr)) / $this->player->getLevel()) * rand(1, $this->player->getMoves());
             for($x = count($armorArr) - 1; $x >= 0; $x--){
                 if(($x === 0) || ($armorChoice % $x === 0)){
                     $armorArr[$x]->setCondition(rand((ceil($armorArr[$x]->getMaxItemCondition() * 0.6)), $armorArr[$x]->getMaxItemCondition()));
@@ -302,10 +278,10 @@ class GameController extends AbstractController
     public function findMedicine()
     {
         $statement = 'You enter into a new room, you peer into an open cupboard and find some medicine.';
-        $chanceOfFind = rand(1, (10 + ($this->currentLevel * 2)));
-        if($chanceOfFind <= 5){
-            $medArr = $this->medicineRepository->findMedicinesByLevel($this->currentLevel);
-            $medicineChoice = (rand(1, count($medArr)) / $this->currentLevel) * rand(1, $this->currentMoves);
+        $chanceOfFind = rand(1, (10 + ($this->player->getLevel() * 2)));
+        if($chanceOfFind <= 7){
+            $medArr = $this->medicineRepository->findMedicinesByLevel($this->player->getLevel());
+            $medicineChoice = (rand(1, count($medArr)) / $this->player->getLevel()) * rand(1, $this->player->getMoves());
             for($x = count($medArr) - 1; $x >= 0; $x--){
                 if(($x === 0) || ($medicineChoice % $x === 0)){
                     $medArr[$x]->setUnits(rand((ceil($medArr[$x]->getMaxUnits() * 0.6)), $medArr[$x]->getMaxUnits()));
@@ -350,13 +326,31 @@ class GameController extends AbstractController
     }
 
     /**
-     * @Route("/updateMedicineOne/{units}", name="update_medicine_one")
+     * @Route("/updateMedicineOne/{username}", name="update_medicine_one")
      */
-    public function updateMedicineOne($units)
+    public function updateMedicineOne(Player $player, Request $request)
     {
-        --$units;
-        $this->player->setMedicineOneUnits($units);
-        return;
+        $this->player = $player;
+        if ($this->player->getMedicineOne() != null) {
+            $this->player->setHealth($this->player->getHealth() + $this->player->getMedicineOne()->getHealAmount());
+            if ($this->player->getHealth() > 100) {
+                $this->player->setHealth(100);
+            }
+
+            $this->player->setMedicineOneUnits($this->player->getMedicineOneUnits() - 1);
+            if ($this->player->getMedicineOneUnits() <= 0) {
+                $this->player->setMedicineOne(null);
+            }
+            $this->entityManager->flush();
+        }
+
+            return $this->render('zombieApocalypse/board.html.twig', [
+            'directions' => $request->attributes->all('directions'),
+            'player' => $this->player,
+            'moves' => $request->query->get('moves'),
+            'level' => $request->query->get('level'),
+        ]);
+
     }
 
     /**
@@ -367,16 +361,33 @@ class GameController extends AbstractController
         $this->player->setMedicineTwo($newMedicine);
         $this->player->setMedicineTwoUnits($units);
         return;
+
     }
 
     /**
-     * @Route("/updateMedicineTwo/{units}", name="update_medicine_two")
+     * @Route("/updateMedicineTwo/{username}", name="update_medicine_two")
      */
-    public function updateMedicineTwo($units)
+    public function updateMedicineTwo(Player $player, Request $request)
     {
-        --$units;
-        $this->player->setMedicineTwoUnits($units);
-        return;
+        $this->player = $player;
+        if ($this->player->getMedicineTwo() != null) {
+            $this->player->setHealth($this->player->getHealth() + $this->player->getMedicineTwo()->getHealAmount());
+            if ($this->player->getHealth() > 100) {
+                $this->player->setHealth(100);
+            }
+
+            $this->player->setMedicineTwoUnits($this->player->getMedicineTwoUnits() - 1);
+            if ($this->player->getMedicineTwoUnits() <= 0) {
+                $this->player->setMedicineTwo(null);
+            }
+            $this->entityManager->flush();
+        }
+        return $this->render('zombieApocalypse/board.html.twig', [
+            'directions' => $request->query->get('directions.direction'),
+            'player' => $this->player,
+            'moves' => $request->query->get('moves'),
+            'level' => $request->query->get('level'),
+        ]);
     }
 
     //get attacked by enemies
@@ -410,8 +421,9 @@ class GameController extends AbstractController
                 $statement = $statement . 'a ladder behind the door and a missing ceiling tile, you climb through and get to the next floor';
                 break;
         }
-        $this->currentLevel++;
-        $this->currentMoves = 0;
+        $this->player->setLevel($this->player->getLevel() + 1);
+        $this->player->setMoves(1);
+        $this->entityManager->flush();
         return ['statement' => $statement];
     }
 
@@ -419,7 +431,7 @@ class GameController extends AbstractController
     public function findBedroom()
     {
         $statement = 'You enter the room, your tired eyes are immediately drawn to the cosy bed in the corner.';
-        $recoveredHealth = rand(1, ($this->currentLevel * 10));
+        $recoveredHealth = rand(1, ($this->player->getLevel() * 10));
         if(($this->player->getHealth() + $recoveredHealth) >= 100){
             $statement = $statement . ' Your health is full again.';
             $this->player->setHealth(100);

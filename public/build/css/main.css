@@ -32,3 +32,12 @@ H4{
     padding: 0;
     border: 0;
 }
+.btn-success{
+    height: 22px!important;
+    width: 50px!important;
+    margin-left: 20px !important;
+    background-color: green;
+    font-size: 1rem!important;
+    border-color: green;
+    padding: 0px!important;
+}
