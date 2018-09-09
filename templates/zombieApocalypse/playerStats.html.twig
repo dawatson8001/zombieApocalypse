@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
         <div class="d-flex flex-row">
-            <div class="stat"><b>Health: </b>{{ player.health }}</div>
+            <div class="stat"><b>Health: </b> <span id="healthValue">{{ player.health }}</span></div>
             <div class="stat"><b>Level: </b>{{ player.level }}</div>
             <div class="stat"><b>Moves: </b>{{ player.moves }}</div>
         </div>
@@ -22,8 +22,8 @@
             <div class="stat">
                 <b>Medicine 1: </b>
                 {% if player.medicineOne != null %}
-                    {{ player.medicineOne.name }} - {{ player.medicineOneUnits }}
-                     <!-- <a class="btn btn-success" href="{{ path('update_medicine_one', {'username': player.username}) }}">Use</a> -->
+                    {{ player.medicineOne.name }} - <span id="medicineOneUnits">{{ player.medicineOneUnits }}</span>
+                    <button  class="btn btn-success" onclick="healOne()">Use</button>
                 {% endif %}
             </div>
         </div>
@@ -32,8 +32,9 @@
         <div class="d-flex flex-row">
             <div class="stat">
                 <b>Medicine 2: </b>
-                {% if player.medicineTwo != null %}{{ player.medicineTwo.name }} - {{ player.medicineTwoUnits }}
-                <!-- <a class="btn btn-success" href="{{ path('update_medicine_one', {'username': player.username}) }}">Use</a> -->
+                {% if player.medicineTwo != null %}
+                    {{ player.medicineTwo.name }} - <span id="medicineTwoUnits">{{ player.medicineTwoUnits }}</span>
+                    <button  class="btn btn-success" onclick="healTwo()">Use</button>
                 {% endif %}
             </div>
         </div>

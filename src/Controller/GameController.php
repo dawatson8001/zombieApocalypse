@@ -19,6 +19,7 @@ use PhpParser\Node\Expr\AssignOp\Concat;
 use App\Form\NewPlayerType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class GameController extends AbstractController
 {
@@ -344,11 +345,9 @@ class GameController extends AbstractController
             $this->entityManager->flush();
         }
 
-            return $this->render('zombieApocalypse/board.html.twig', [
-            'directions' => $request->attributes->all('directions'),
-            'player' => $this->player,
-            'moves' => $request->query->get('moves'),
-            'level' => $request->query->get('level'),
+        return new JsonResponse([
+            'health' => $this->player->getHealth(),
+            'amount' => $this->player->getMedicineOneUnits(),
         ]);
 
     }
@@ -382,12 +381,12 @@ class GameController extends AbstractController
             }
             $this->entityManager->flush();
         }
-        return $this->render('zombieApocalypse/board.html.twig', [
-            'directions' => $request->query->get('directions.direction'),
-            'player' => $this->player,
-            'moves' => $request->query->get('moves'),
-            'level' => $request->query->get('level'),
+
+        return new JsonResponse([
+            'health' => $this->player->getHealth(),
+            'amount' => $this->player->getMedicineTwoUnits(),
         ]);
+
     }
 
     //get attacked by enemies

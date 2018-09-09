@@ -45,3 +45,29 @@ _______________________________________________________________________________<
         You found: {{ medicine.name }} - {{ medicine.units }}
     {% endif %}
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        function healOne() {
+            fetch('{{ path('update_medicine_one', {'username': player.username}) }}')
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        document.getElementById('healthValue').innerText = json.health;    
+                        document.getElementById('medicineOneUnits').innerText = json.amount;    
+                    });
+                }).catch(function (reason) {
+            });
+        }
+
+        function healTwo() {
+            fetch('{{ path('update_medicine_two', {'username': player.username}) }}')
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        document.getElementById('healthValue').innerText = json.health; 
+                        document.getElementById('medicineTwoUnits').innerText = json.amount;       
+                    });
+                }).catch(function (reason) {
+            });
+        }
+    </script>
+{% endblock %}
