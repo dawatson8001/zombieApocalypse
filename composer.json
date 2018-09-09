@@ -61,7 +61,7 @@
         ],
         "compile": [
             "chmod -R 777 var/"
-        ]
+          ]
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -71,5 +71,5 @@
             "allow-contrib": false,
             "require": "4.1.*"
         }
-    },
+    }
 }
