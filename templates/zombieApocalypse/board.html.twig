@@ -58,7 +58,7 @@ _______________________________________________________________________________<
                 }).catch(function (reason) {
             });
         }
-
+        
         function healTwo() {
             fetch('{{ path('update_medicine_two', {'username': player.username}) }}')
                 .then(function (response) {

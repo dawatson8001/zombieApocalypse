@@ -120,22 +120,22 @@ class GameController extends AbstractController
         }
         $directions = array_unique($makeDirection);
 
-        //disabled for testing
-        // if(sizeOf($directions) == 1){
-        //     $situation = rand(1, 2);
-        //     switch($situation){
-        //         case 1:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->deadEnd(),
-        //                 ];
-        //             break;
-        //         case 2:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->findBedroom(),
-        //                 ];
-        //             break;
-        //     }
-        // }
+        // disabled for testing
+        if(sizeOf($directions) == 1){
+            $situation = rand(1, 2);
+            switch($situation){
+                case 1:
+                    return ['direction' => $directions,
+                            'situation' => $this->deadEnd(),
+                        ];
+                    break;
+                case 2:
+                    return ['direction' => $directions,
+                            'situation' => $this->findBedroom(),
+                        ];
+                    break;
+            }
+        }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -145,7 +145,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(6, 6);    //Testing 
+        $situation = rand(1, 5);    //Testing 
         switch($situation){
             case 1:
                 return $this->findWeapon();
