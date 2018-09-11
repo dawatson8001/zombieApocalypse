@@ -120,22 +120,22 @@ class GameController extends AbstractController
         }
         $directions = array_unique($makeDirection);
 
-        // disabled for testing
-        // if(sizeOf($directions) == 1){
-        //     $situation = rand(1, 2);
-        //     switch($situation){
-        //         case 1:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->deadEnd(),
-        //                 ];
-        //             break;
-        //         case 2:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->findBedroom(),
-        //                 ];
-        //             break;
-        //     }
-        // }
+        disabled for testing
+        if(sizeOf($directions) == 1){
+            $situation = rand(1, 2);
+            switch($situation){
+                case 1:
+                    return ['direction' => $directions,
+                            'situation' => $this->deadEnd(),
+                        ];
+                    break;
+                case 2:
+                    return ['direction' => $directions,
+                            'situation' => $this->findBedroom(),
+                        ];
+                    break;
+            }
+        }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -145,7 +145,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(6, 6);    //Testing 
+        $situation = rand(1, 5);    //Testing 
         switch($situation){
             case 1:
                 return $this->findWeapon();
@@ -429,9 +429,9 @@ class GameController extends AbstractController
                 //get attack and defence stats
                 $enemyAttack = rand($enemyAttackers[$i]->getMinDamage(), $enemyAttackers[$i]->getMaxDamage());
                 $enemyDefence = $enemyAttackers[$i]->getDefence();
-                // $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
-                //     (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
-                $playerAttack = 50;
+                $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
+                    (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
+                // $playerAttack = 50;
                 if($this->player->getArmor() !=null){
                     $playerDefence = ceil((((100 / $this->player->getArmor()->getMaxItemCondition()) * $this->player->getArmorCondition()) / 100) * $this->player->getArmor()->getDefence());
                 }else{
@@ -453,11 +453,16 @@ class GameController extends AbstractController
                     $this->player->setArmor(null);
                     $this->player->setArmorCondition(0);
                 }
-                $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
+                // $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
                 //check if player and enemy alive
                 if($this->player->getHealth() <= 0){
                     $enemyAttack = false;
-                    $statement = 'GAME OVER!!! Looks like you were killed by ' . $enemyNumbers . ' ' . $enemyArr[$i]->getName();
+                    $statement = 'GAME OVER!!! Looks like you were killed by ';
+                    if($enemyNumbers == 1){
+                        $statement = $statement . 'a ' . $enemyArr[$i]->getName();
+                    }else{
+                        $statement = $statement . $enemyNumbers . $enemyArr[$i]->getName() ."'s";
+                    }
                     $playerDead = true;
                 }elseif($enemyAttackers[$i]->getHealth() <= 0){
                     $enemyAttack = false;

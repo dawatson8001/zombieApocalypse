@@ -18,10 +18,8 @@
     <body class="bg-light">
         <main role="main" class="container">
             <div >
-                <img src="{{ asset('images/zombieApocalypseLogo.gif') }}" width="100%" alt="Zombie Apocalypse logo">
+                <a href="{{ path('start_page')}}"><img src="{{ asset('images/zombieApocalypseLogo.gif') }}" width="100%" alt="Zombie Apocalypse logo"></a>
                 {% block body %}{% endblock %}
-
-
             </div>
         </main>        
         {% block javascripts %}
