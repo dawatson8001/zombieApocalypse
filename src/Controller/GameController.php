@@ -429,8 +429,9 @@ class GameController extends AbstractController
                 //get attack and defence stats
                 $enemyAttack = rand($enemyAttackers[$i]->getMinDamage(), $enemyAttackers[$i]->getMaxDamage());
                 $enemyDefence = $enemyAttackers[$i]->getDefence();
-                $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
-                    (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
+                // $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
+                //     (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
+                $playerAttack = 50;
                 if($this->player->getArmor() !=null){
                     $playerDefence = ceil((((100 / $this->player->getArmor()->getMaxItemCondition()) * $this->player->getArmorCondition()) / 100) * $this->player->getArmor()->getDefence());
                 }else{
