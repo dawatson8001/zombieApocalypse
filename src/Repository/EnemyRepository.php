@@ -47,4 +47,14 @@ class EnemyRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findEnemyByLevel($level)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.levelAvailable <= :val')
+            ->setParameter('val', $level)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

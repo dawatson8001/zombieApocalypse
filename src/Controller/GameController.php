@@ -7,15 +7,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\WeaponRepository;
-use App\Entity\Weapon;
 use App\Repository\ArmorRepository;
 use App\Repository\MedicineRepository;
 use App\Repository\EnemyRepository;
+use App\Repository\PlayerRepository;
+use App\Entity\Weapon;
 use App\Entity\Armor;
 use App\Entity\Medicine;
+use App\Entity\Enemy;
 use App\Entity\Player;
-use App\Repository\PlayerRepository;
-use PhpParser\Node\Expr\AssignOp\Concat;
 use App\Form\NewPlayerType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,8 +52,8 @@ class GameController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
 
-            $this->player->setHealth(100);
-            $this->player->setMaxHealth(100);
+            $this->player->setHealth(200);
+            $this->player->setMaxHealth(200);
             $this->player->setLevel(1);
             $this->player->setMoves(0);
 
@@ -121,21 +121,21 @@ class GameController extends AbstractController
         $directions = array_unique($makeDirection);
 
         // disabled for testing
-        if(sizeOf($directions) == 1){
-            $situation = rand(1, 2);
-            switch($situation){
-                case 1:
-                    return ['direction' => $directions,
-                            'situation' => $this->deadEnd(),
-                        ];
-                    break;
-                case 2:
-                    return ['direction' => $directions,
-                            'situation' => $this->findBedroom(),
-                        ];
-                    break;
-            }
-        }
+        // if(sizeOf($directions) == 1){
+        //     $situation = rand(1, 2);
+        //     switch($situation){
+        //         case 1:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->deadEnd(),
+        //                 ];
+        //             break;
+        //         case 2:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->findBedroom(),
+        //                 ];
+        //             break;
+        //     }
+        // }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -145,7 +145,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(1, 5);    //Testing 
+        $situation = rand(6, 6);    //Testing 
         switch($situation){
             case 1:
                 return $this->findWeapon();
@@ -329,7 +329,7 @@ class GameController extends AbstractController
     /**
      * @Route("/updateMedicineOne/{username}", name="update_medicine_one")
      */
-    public function updateMedicineOne(Player $player, Request $request)
+    public function updateMedicineOne(Player $player)
     {
         $this->player = $player;
         if ($this->player->getMedicineOne() != null) {
@@ -366,7 +366,7 @@ class GameController extends AbstractController
     /**
      * @Route("/updateMedicineTwo/{username}", name="update_medicine_two")
      */
-    public function updateMedicineTwo(Player $player, Request $request)
+    public function updateMedicineTwo(Player $player)
     {
         $this->player = $player;
         if ($this->player->getMedicineTwo() != null) {
@@ -392,8 +392,82 @@ class GameController extends AbstractController
     //get attacked by enemies
     public function findAttacker()
     {
-        $statement = 'You carefully close the door behind you, as you turn around to inspect the room you hear noises!!';
-        //search database for type of attacker, randomly generate number - all based on level and number of rooms visited in level
+        $statement = "You carefully close the door behind you, as you turn around to inspect the room you hear noises!! ";
+        $playerDead = false;
+        $enemyArr = $this->enemyRepository->findEnemyByLevel($this->player->getLevel());
+        $enemy = rand(1, count($enemyArr));
+        if($enemyArr[$enemy-1]->getName() == 'Zombie'){
+            $enemyNumbers = ceil($this->player->getLevel() * 0.5);
+            if($enemyNumbers == 1){
+                $statement = $statement . 'Ermmm, this should be interesting, hi Mr Zombie.';
+            }else{
+                $statement = $statement . 'Ermmm, this should be interesting, looks like ' . $enemyNumbers . ' hungry zombies.';
+            }
+        }elseif($enemyArr[$enemy-1]->getName() == 'Survivor'){
+            $enemyNumbers = floor($this->player->getLevel() / $enemyArr[$enemy-1]->getLevelAvailable());
+            if($enemyNumbers == 1){
+                $statement = $statement . 'Another survivor, they don\'t seem happy to see you...';
+            }else{
+                $statement = $statement . $enemyNumbers . ' more survivors, they don\'t seem happy to see you...';
+            }
+        }elseif($enemyArr[$enemy-1]->getName() == 'Looter'){
+            $enemyNumbers = 1;
+            $statement = $statement . 'Looks like a looter. ';
+        }
+        $enemyAttackers = [];
+        for($x = 0; $x < $enemyNumbers; $x++){
+            $enemyAttackers[$x] = new $enemyArr[$enemy-1];
+            $enemyAttackers[$x]->setHealth($enemyArr[$enemy-1]->getHealth());
+            $enemyAttackers[$x]->setDefence($enemyArr[$enemy-1]->getDefence());
+            $enemyAttackers[$x]->setMinDamage($enemyArr[$enemy-1]->getMinDamage());
+            $enemyAttackers[$x]->setMaxDamage($enemyArr[$enemy-1]->getMaxDamage());
+            $enemyAttackers[$x]->setLevelAvailable($enemyArr[$enemy-1]->getLevelAvailable());
+        }
+        for($i = 0; $i < $enemyNumbers; $i++){
+            $enemyAttack = true;
+            while($enemyAttack){
+                //get attack and defence stats
+                $enemyAttack = rand($enemyAttackers[$i]->getMinDamage(), $enemyAttackers[$i]->getMaxDamage());
+                $enemyDefence = $enemyAttackers[$i]->getDefence();
+                $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
+                    (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
+                if($this->player->getArmor() !=null){
+                    $playerDefence = ceil((((100 / $this->player->getArmor()->getMaxItemCondition()) * $this->player->getArmorCondition()) / 100) * $this->player->getArmor()->getDefence());
+                }else{
+                    $playerDefence = 0;
+                }
+                //player attack
+                $enemyAttackers[$i]->setHealth($enemyAttackers[$i]->getHealth() - ($playerAttack));
+                //enemy attack
+                $damage = $enemyAttack - $playerDefence;
+                if($damage < 0){
+                    $damage = 2;
+                }
+                $this->player->setHealth($this->player->getHealth() - $damage);
+                $armorDamage = rand(0,1);
+                if ($armorDamage == true) {
+                    $this->player->setArmorCondition($this->player->getArmorCondition() - 1);
+                }
+                if($this->player->getArmorCondition() <= 0){
+                    $this->player->setArmor(null);
+                    $this->player->setArmorCondition(0);
+                }
+                // $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
+                //check if player and enemy alive
+                if($this->player->getHealth() <= 0){
+                    $enemyAttack = false;
+                    $statement = 'GAME OVER!!! Looks like you were killed by ' . $enemyNumbers . ' ' . $enemyArr[$i]->getName();
+                    $playerDead = true;
+                }elseif($enemyAttackers[$i]->getHealth() <= 0){
+                    $enemyAttack = false;
+                }
+            }
+        }
+        if (!$playerDead) {
+            $statement = $statement . " Looks like you made it, this time...";
+        }
+        $this->entityManager->flush();
+
         return ['statement' => $statement];
     }
 
