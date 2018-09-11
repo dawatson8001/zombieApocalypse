@@ -120,7 +120,7 @@ class GameController extends AbstractController
         }
         $directions = array_unique($makeDirection);
 
-        disabled for testing
+        // disabled for testing
         if(sizeOf($directions) == 1){
             $situation = rand(1, 2);
             switch($situation){
