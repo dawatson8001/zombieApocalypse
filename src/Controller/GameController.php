@@ -453,7 +453,7 @@ class GameController extends AbstractController
                     $this->player->setArmor(null);
                     $this->player->setArmorCondition(0);
                 }
-                // $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
+                $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
                 //check if player and enemy alive
                 if($this->player->getHealth() <= 0){
                     $enemyAttack = false;
