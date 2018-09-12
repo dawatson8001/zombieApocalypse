@@ -121,21 +121,21 @@ class GameController extends AbstractController
         $directions = array_unique($makeDirection);
 
         // disabled for testing
-        if(sizeOf($directions) == 1){
-            $situation = rand(1, 2);
-            switch($situation){
-                case 1:
-                    return ['direction' => $directions,
-                            'situation' => $this->deadEnd(),
-                        ];
-                    break;
-                case 2:
-                    return ['direction' => $directions,
-                            'situation' => $this->findBedroom(),
-                        ];
-                    break;
-            }
-        }
+        // if(sizeOf($directions) == 1){
+        //     $situation = rand(1, 2);
+        //     switch($situation){
+        //         case 1:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->deadEnd(),
+        //                 ];
+        //             break;
+        //         case 2:
+        //             return ['direction' => $directions,
+        //                     'situation' => $this->findBedroom(),
+        //                 ];
+        //             break;
+        //     }
+        // }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -145,7 +145,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(1, 5);    //Testing 
+        $situation = rand(5, 5);  
         switch($situation){
             case 1:
                 return $this->findWeapon();
@@ -334,8 +334,8 @@ class GameController extends AbstractController
         $this->player = $player;
         if ($this->player->getMedicineOne() != null) {
             $this->player->setHealth($this->player->getHealth() + $this->player->getMedicineOne()->getHealAmount());
-            if ($this->player->getHealth() > 100) {
-                $this->player->setHealth(100);
+            if ($this->player->getHealth() > 200) {
+                $this->player->setHealth(200);
             }
 
             $this->player->setMedicineOneUnits($this->player->getMedicineOneUnits() - 1);
@@ -371,8 +371,8 @@ class GameController extends AbstractController
         $this->player = $player;
         if ($this->player->getMedicineTwo() != null) {
             $this->player->setHealth($this->player->getHealth() + $this->player->getMedicineTwo()->getHealAmount());
-            if ($this->player->getHealth() > 100) {
-                $this->player->setHealth(100);
+            if ($this->player->getHealth() > 200) {
+                $this->player->setHealth(200);
             }
 
             $this->player->setMedicineTwoUnits($this->player->getMedicineTwoUnits() - 1);
@@ -429,9 +429,9 @@ class GameController extends AbstractController
                 //get attack and defence stats
                 $enemyAttack = rand($enemyAttackers[$i]->getMinDamage(), $enemyAttackers[$i]->getMaxDamage());
                 $enemyDefence = $enemyAttackers[$i]->getDefence();
-                $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
-                    (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
-                // $playerAttack = 50;
+                // $playerAttack = ceil((rand($this->player->getWeapon()->getMinDamage(), $this->player->getWeapon()->getMaxDamage())) * 
+                //     (((100 / $this->player->getWeapon()->getMaxItemCondition()) * $this->player->getWeaponCondition()) / 100));
+                $playerAttack = 50;
                 if($this->player->getArmor() !=null){
                     $playerDefence = ceil((((100 / $this->player->getArmor()->getMaxItemCondition()) * $this->player->getArmorCondition()) / 100) * $this->player->getArmor()->getDefence());
                 }else{
@@ -453,7 +453,7 @@ class GameController extends AbstractController
                     $this->player->setArmor(null);
                     $this->player->setArmorCondition(0);
                 }
-                // $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
+                $statement = $statement . "Enemy" . $i . " Health: " . $enemyAttackers[$i]->getHealth() . " Player Health: " . $this->player->getHealth();
                 //check if player and enemy alive
                 if($this->player->getHealth() <= 0){
                     $enemyAttack = false;

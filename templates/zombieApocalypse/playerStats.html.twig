@@ -22,8 +22,8 @@
             <div class="stat">
                 <b>Medicine 1: </b>
                 {% if player.medicineOne != null %}
-                    {{ player.medicineOne.name }} - <span id="medicineOneUnits">{{ player.medicineOneUnits }}</span>
-                    <button  class="btn btn-success" onclick="healOne()">Use</button>
+                    <span id="medicineOne">{{ player.medicineOne.name }} - <span id="medicineOneUnits">{{ player.medicineOneUnits }}</span>
+                    <button  class="btn btn-success" onclick="healOne()">Use</button></span>
                 {% endif %}
             </div>
         </div>
@@ -33,8 +33,8 @@
             <div class="stat">
                 <b>Medicine 2: </b>
                 {% if player.medicineTwo != null %}
-                    {{ player.medicineTwo.name }} - <span id="medicineTwoUnits">{{ player.medicineTwoUnits }}</span>
-                    <button  class="btn btn-success" onclick="healTwo()">Use</button>
+                <span id="medicineTwo">{{ player.medicineTwo.name }} - <span id="medicineTwoUnits">{{ player.medicineTwoUnits }}</span>
+                    <button  class="btn btn-success" onclick="healTwo()">Use</button></span>
                 {% endif %}
             </div>
         </div>

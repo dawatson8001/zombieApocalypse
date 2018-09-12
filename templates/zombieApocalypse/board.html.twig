@@ -57,7 +57,10 @@ _______________________________________________________________________________<
                 .then(function (response) {
                     response.json().then(function (json) {
                         document.getElementById('healthValue').innerText = json.health;    
-                        document.getElementById('medicineOneUnits').innerText = json.amount;    
+                        document.getElementById('medicineOneUnits').innerText = json.amount;
+                        if(json.amount <= 0){
+                            document.getElementById('medicineOne').innerText = '';
+                        }   
                     });
                 }).catch(function (reason) {
             });
@@ -68,7 +71,10 @@ _______________________________________________________________________________<
                 .then(function (response) {
                     response.json().then(function (json) {
                         document.getElementById('healthValue').innerText = json.health; 
-                        document.getElementById('medicineTwoUnits').innerText = json.amount;       
+                        document.getElementById('medicineTwoUnits').innerText = json.amount;  
+                        if(json.amount <= 0){
+                            document.getElementById('medicineTwo').innerText = '';
+                        }     
                     });
                 }).catch(function (reason) {
             });
