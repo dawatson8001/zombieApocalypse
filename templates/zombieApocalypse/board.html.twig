@@ -9,13 +9,13 @@
                     {% if 'N' in directions.direction %}
                         <a class="btn btn-primary direction" href="{{ path('move', {'username': player.username, 'from': 'N'}) }}">N</a>
                     {% else %}
-                        <img id="compassMiddle" src="#" alt="">
+                    <a class="btn direction" style="background-color:transparent;border-color:transparent"></a>
                     {% endif %}
                 </div>
                 {% if 'W' in directions.direction and 'E' in directions.direction %}
                     <div class="d-flex justify-content-start">
                         <a class="btn btn-primary direction" href="{{ path('move', {'username': player.username, 'from': 'W'}) }}" id="west">W</a>
-                        <img id="compassMiddle" src="#" alt="">
+                        <a class="btn direction" style="background-color:transparent;border-color:transparent"></a>
                         <a class="btn btn-primary direction" href="{{ path('move', {'username': player.username, 'from': 'E'}) }}">E</a>
                     </div>
                 {% elseif 'W' in directions.direction %}
@@ -24,10 +24,12 @@
                     </div>
                 {% elseif 'E' in directions.direction %}
                     <div class="d-flex justify-content-end">
+                        <a class="btn direction" style="background-color:transparent;border-color:transparent"></a>
+                        <a class="btn direction" style="background-color:transparent;border-color:transparent"></a>
                         <a class="btn btn-primary direction" href="{{ path('move', {'username': player.username, 'from': 'E'}) }}">E</a>
                     </div>
                 {% else %}
-                    <img id="compassMiddle" src="#" alt="">
+                    <a class="btn direction" style="background-color:transparent;border-color:transparent"></a>
                 {% endif %}
                 <div class="d-flex justify-content-center">
                     {% if 'S' in directions.direction %}
@@ -65,7 +67,6 @@ _______________________________________________________________________________<
                 }).catch(function (reason) {
             });
         }
-        
         function healTwo() {
             fetch('{{ path('update_medicine_two', {'username': player.username}) }}')
                 .then(function (response) {

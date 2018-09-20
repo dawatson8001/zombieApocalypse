@@ -74,7 +74,7 @@ class GameController extends AbstractController
     /**
      * @Route("/move/{username}/{from}", name="move")
      */
-    public function move( Player $player, $from)
+    public function move(Player $player, $from)
     {
         $this->player = $player;
         $this->player->setMoves($this->player->getMoves() + 1);
@@ -121,21 +121,21 @@ class GameController extends AbstractController
         $directions = array_unique($makeDirection);
 
         // disabled for testing
-        // if(sizeOf($directions) == 1){
-        //     $situation = rand(1, 2);
-        //     switch($situation){
-        //         case 1:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->deadEnd(),
-        //                 ];
-        //             break;
-        //         case 2:
-        //             return ['direction' => $directions,
-        //                     'situation' => $this->findBedroom(),
-        //                 ];
-        //             break;
-        //     }
-        // }
+        if(sizeOf($directions) == 1){
+            $situation = rand(1, 2);
+            switch($situation){
+                case 1:
+                    return ['direction' => $directions,
+                            'situation' => $this->deadEnd(),
+                        ];
+                    break;
+                case 2:
+                    return ['direction' => $directions,
+                            'situation' => $this->findBedroom(),
+                        ];
+                    break;
+            }
+        }
         return ['direction' => $directions,
                 'situation' => $this->situationInRoom(),
             ];
@@ -145,7 +145,7 @@ class GameController extends AbstractController
     public function situationInRoom()
     {
 
-        $situation = rand(5, 5);  
+        $situation = rand(1, 5);  
         switch($situation){
             case 1:
                 return $this->findWeapon();
